@@ -1,0 +1,56 @@
+version: '3.7'
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: agreeable_chef
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./MySQL/data:/data
+    ports:
+      - '3306'
+
+  redis:
+    build:
+      context: ./Redis
+      args:
+        - VERSION=latest
+    image: redis:tag
+    volumes:
+      - ./Redis/data:/data
+    ports:
+      - '6379'
+
+  rabbitmq:
+#    build: using a build context like in redis, is another approach to accomplish the below config
+#      context: ./RabbitMQ
+    image: 'rabbitmq:latest'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+      RABBITMQ_DEFAULT_VHOST:
+
+      RABBITMQ_SSL_CACERTFILE:
+      RABBITMQ_SSL_CERTFILE:
+      RABBITMQ_SSL_DEPTH:
+      RABBITMQ_SSL_FAIL_IF_NO_PEER_CERT:
+      RABBITMQ_SSL_KEYFILE:
+      RABBITMQ_SSL_VERIFY:
+
+      RABBITMQ_MANAGEMENT_SSL_CACERTFILE:
+      RABBITMQ_MANAGEMENT_SSL_CERTFILE:
+      RABBITMQ_MANAGEMENT_SSL_DEPTH:
+      RABBITMQ_MANAGEMENT_SSL_FAIL_IF_NO_PEER_CERT:
+      RABBITMQ_MANAGEMENT_SSL_KEYFILE:
+      RABBITMQ_MANAGEMENT_SSL_VERIFY:
+    # I cant remember is you can use a volume for a single file instead of a dir
+    # If not there are other ways to do what I'm illustrating here. e.g. redis build context w/ dockerfile
+    # But the point being is to demonstrate enhancing a service while still using the symfony binary
+    volumes:
+      - ./RabbitMQ/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    ports:
+    - '5672'
+    - '15672'
